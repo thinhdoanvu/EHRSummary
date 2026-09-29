@@ -1,0 +1,45 @@
+# Tiến trình thực hiện code
+---
+### NHÓM 1: Chuẩn bị UMLS (chạy 1 lần)
+```
+1. umls_to_sqlite.py → umls_simple.sqlite
+2. export_lexicon.py → lexicon_from_mrconso.json
+3. build_alias_map_full.py → alias_map_full.pkl
+4. build_cui_sty_map.py → cui_to_stys.json
+5. build_cui_icd11_map.py → cui_has_icd11.sqlite
+6. cui_sql_2_json.py → cui_has_icd11.json
+7. build_reduced_lexicon.py → lexicon_reduced.json
+```
+---
+### NHÓM 2: Chuẩn bị Posts (chạy 1 lần)
+```
+8. csv_split.py → posts.csv → từng post_id.csv
+9. remove_content_mty.py → loại post rỗng
+10. extract_top_ngrams.py → top_ngrams.txt
+11. map_ngrams_to_uMLS.py → mapped_candidates.jsonl
+```
+---
+### NHÓM 3: Build index ICD-11 (chạy 1 lần)
+```
+12. index_icd.py → ChromaDB collection (SapBERT)
+```
+---
+### NHÓM 4: main_v1.py chạy cho từng file CSV
+```
+13. rawblock_processor.py → cấu trúc post thành IDENTIFIER_BLOCK + CONTENT_BLOCK
+14. RawtextSummaryl.py (SummaryCouncil) → tóm tắt 1 câu
+15. DiseaseCouncil.py → trích xuất bệnh từ summary (file này tôi chưa thấy nội dung)
+16. NarrativeCouncil.py → phân loại narrative theo taxonomy
+17. ICD11Council.py → map disease → ICD-11 code (dùng QualifiersICD11.py để extract postcodes)
+```
+
+```
+for mỗi post_id.csv:
+    RawDataProcessor        → IDENTIFIER_BLOCK + CONTENT_BLOCK
+    DiseaseCouncil          → danh sách bệnh (spaCy + UMLS + LLM filter)
+    ICD11Council            → ICD-11 codes (SapBERT + ChromaDB + LLM)
+    for mỗi post trong file:
+        SummaryCouncil      → 1-sentence summary
+        NarrativeCouncil    → Subtopic, FLICC, Stigma, Trigger
+    → lưu post_id.txt + final_results.csv
+```
