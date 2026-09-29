@@ -109,6 +109,4 @@ If you use this pipeline in your research, please cite:
 
 [Specify license, e.g., MIT / Apache 2.0]
 
-## Contact
 
-Vu Thinh Doan — thinhdv@ntu.edu.vn
